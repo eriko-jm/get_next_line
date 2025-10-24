@@ -6,7 +6,7 @@
 /*   By: joaseque <joaseque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/22 17:43:42 by joaseque          #+#    #+#             */
-/*   Updated: 2025/10/22 17:45:29 by joaseque         ###   ########.fr       */
+/*   Updated: 2025/10/24 19:57:35 by joaseque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 
 # include <stddef.h>
 # include <unistd.h>
+# include <stdlib.h>
 
 char	*get_next_line(int fd);
 size_t	ft_strlen(const char *s);
