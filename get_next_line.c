@@ -6,13 +6,13 @@
 /*   By: joaseque <joaseque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/22 17:42:52 by joaseque          #+#    #+#             */
-/*   Updated: 2025/10/25 12:21:40 by joaseque         ###   ########.fr       */
+/*   Updated: 2025/10/25 15:11:58 by joaseque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-static char	*update_line(char *buffer, int *error_flag)
+static char	*update_line(char *buffer, ssize_t *error_flag)
 {
 	char	*new_buff;
 	ssize_t	i;
@@ -26,17 +26,13 @@ static char	*update_line(char *buffer, int *error_flag)
 		free(buffer);
 		return (*error_flag = 0, NULL);
 	}
-	new_buff = (char *)malloc(ft_strlen(buffer) - i);
+	new_buff = malloc(ft_strlen(buffer) - i + 1);
 	if (!new_buff)
 		return (free(buffer), *error_flag = 1, NULL);
 	i++;
 	j = 0;
 	while (buffer[i])
-	{
-		new_buff[j] = buffer[i];
-		i++;
-		j++;
-	}
+		new_buff[j++] = buffer[i++];
 	new_buff[j] = '\0';
 	free(buffer);
 	return (*error_flag = 0, new_buff);
@@ -47,7 +43,7 @@ static char	*extract_line(char *buffer)
 	char	*line;
 	ssize_t	i;
 
-	if (!buffer)
+	if (!buffer || !*buffer)
 		return (NULL);
 	i = 0;
 	while (buffer[i] && buffer[i] != '\n')
@@ -65,45 +61,49 @@ static char	*extract_line(char *buffer)
 		i++;
 	}
 	if (buffer[i] == '\n')
-		line[i] = '\n';
-	i++;
+		line[i++] = '\n';
 	line[i] = '\0';
 	return (line);
 }
 
-static char	*read_line(int fd, char **buffer)
+static char	*read_line(int fd, char *buffer)
 {
 	char	*temp_buf;
-	size_t	bytes_read;
+	char	*temp2;
+	ssize_t	bytes_read;
 
-	temp_buf = (char *)malloc(BUFFER_SIZE + 1);
+	if (!buffer)
+		buffer = ft_strdup("");
+	temp_buf = malloc(BUFFER_SIZE + 1);
 	if (!temp_buf)
-		return (free(*buffer), *buffer = NULL, NULL);
+		return (free(buffer), NULL);
 	bytes_read = 1;
-	while (!ft_strchr(*buffer, '\n') && bytes_read > 0)
+	while (!ft_strchr(buffer, '\n') && bytes_read > 0)
 	{
 		bytes_read = read(fd, temp_buf, BUFFER_SIZE);
-		// if (bytes_read < 0)
-		// 	return (free(*buffer), *buffer = NULL, NULL);
-		temp_buf[BUFFER_SIZE] = '\0';
-		*buffer = ft_strjoin(*buffer, temp_buf);
-		if (!*buffer)
+		if (bytes_read < 0)
+			return (free(buffer), free(temp_buf), NULL);
+		temp_buf[bytes_read] = '\0';
+		temp2 = ft_strjoin(buffer, temp_buf);
+		free(buffer);
+		buffer = temp2;
+		if (!buffer)
 			return (free(temp_buf), NULL);
 	}
-	return (free(temp_buf), *buffer);
+	free(temp_buf);
+	return (buffer);
 }
 
 char	*get_next_line(int fd)
 {
 	static char	*buffer;
 	char		*line;
-	int			error_flag;
+	ssize_t		error_flag;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (free(buffer), buffer = NULL, NULL);
-
-	buffer = read_line(fd, &buffer);
-	if (!buffer)
+	buffer = read_line(fd, buffer);
+	if (!buffer || !*buffer)
 		return (free(buffer), buffer = NULL, NULL);
 	line = extract_line(buffer);
 	if (!line)
