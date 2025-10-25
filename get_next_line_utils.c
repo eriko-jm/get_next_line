@@ -39,6 +39,7 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	str[lens[0]] = '\0';
 	return (str);
 }
+
 char	*ft_strchr(const char *s, int c)
 {
 	char	*s2;
@@ -46,7 +47,9 @@ char	*ft_strchr(const char *s, int c)
 
 	i = 0;
 	s2 = (char *)s;
-	while (s2[i] != '\0')
+	if (!s2)
+		return (NULL);
+	while (s2[i])
 	{
 		if ((unsigned char)s2[i] == (unsigned char)c)
 			return (&s2[i]);

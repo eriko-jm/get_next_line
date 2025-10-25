@@ -6,7 +6,7 @@
 /*   By: joaseque <joaseque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/22 17:42:52 by joaseque          #+#    #+#             */
-/*   Updated: 2025/10/24 20:03:57 by joaseque         ###   ########.fr       */
+/*   Updated: 2025/10/25 12:21:40 by joaseque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,8 +83,8 @@ static char	*read_line(int fd, char **buffer)
 	while (!ft_strchr(*buffer, '\n') && bytes_read > 0)
 	{
 		bytes_read = read(fd, temp_buf, BUFFER_SIZE);
-		if (bytes_read <= 0)
-			return (free(*buffer), *buffer = NULL, NULL);
+		// if (bytes_read < 0)
+		// 	return (free(*buffer), *buffer = NULL, NULL);
 		temp_buf[BUFFER_SIZE] = '\0';
 		*buffer = ft_strjoin(*buffer, temp_buf);
 		if (!*buffer)
@@ -103,7 +103,7 @@ char	*get_next_line(int fd)
 		return (free(buffer), buffer = NULL, NULL);
 
 	buffer = read_line(fd, &buffer);
-	if (!*buffer || (buffer && !*buffer))
+	if (!buffer)
 		return (free(buffer), buffer = NULL, NULL);
 	line = extract_line(buffer);
 	if (!line)
