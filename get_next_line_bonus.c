@@ -1,5 +1,5 @@
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 static char	*update_line(char *buffer, ssize_t *error_flag)
 {
